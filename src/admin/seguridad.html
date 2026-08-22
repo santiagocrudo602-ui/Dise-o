@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magnet Admin - Seguridad</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js"></script>
+</head>
+<body>
+<nav class="nav">
+    <div class="nav-header">Magnet Admin</div>
+    <a href="/" style="color:var(--muted); font-size:12px; margin-top:-35px; margin-bottom:15px; background:none; padding:0; display:inline-block;">← Volver al sitio</a>
+    <a href="dashboard.html">Diseños & Colección</a>
+    <a href="perfil.html">Perfil & Contacto</a>
+    <a href="textos.html">Textos de la Página</a>
+    <a href="seguridad.html" class="active">Seguridad (2FA)</a>
+    <a href="#" onclick="logout()" class="logout">Cerrar Sesión</a>
+</nav>
+<div class="main-wrapper">
+    <div class="container">
+        <h1 class="page-title">Seguridad</h1>
+        <p class="page-desc">Protege tu panel de administración añadiendo un doble factor de autenticación (2FA).</p>
+        
+        <div class="card" style="max-width: 600px;">
+            <h2>Autenticación en Dos Pasos (2FA)</h2>
+            <p class="sub">El 2FA agrega una capa extra de seguridad usando una app como Google Authenticator o Authy en tu celular.</p>
+            
+            <div id="msg" class="success" style="margin-bottom:20px; font-size:14px;"></div>
+            
+            <div id="actions-panel">
+                <button id="btn-setup" onclick="setup2FA()">Configurar 2FA ahora</button>
+                <button id="btn-disable" onclick="disable2FA()" class="secondary">Desactivar 2FA</button>
+            </div>
+
+            <div id="setup-panel" style="display:none; margin-top:30px; padding-top:20px; border-top:1px solid var(--border);">
+                <h3 style="font-size:16px; margin-bottom:15px;">Instrucciones:</h3>
+                <ol style="margin-left:20px; color:var(--muted); font-size:14px; line-height:1.7; margin-bottom:20px;">
+                    <li>Abre tu app de autenticación (Google Authenticator, Authy, etc).</li>
+                    <li>Escanea este código QR.</li>
+                    <li>Ingresa el código de 6 dígitos que genera la app para confirmar.</li>
+                </ol>
+                
+                <div style="background:white; padding:15px; border-radius:8px; display:inline-block; margin-bottom:20px;">
+                    <img id="qr-img" src="" alt="QR Code" style="display:block; width:200px; height:200px;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Código Secreto (Si no puedes escanear el QR)</label>
+                    <p style="font-family:monospace; color:var(--ink); background:var(--bg-input); padding:10px; border-radius:6px; user-select:all;" id="secret-text"></p>
+                </div>
+                
+                <div class="form-group" style="max-width:250px; margin-top:20px;">
+                    <label>Ingresa el código para confirmar</label>
+                    <input type="text" id="codigo" placeholder="Ej: 123456" style="text-align:center; letter-spacing:4px; font-size:18px;">
+                </div>
+                
+                <button onclick="enable2FA()">Confirmar y Activar 2FA</button>
+                <button onclick="document.getElementById('setup-panel').style.display='none'" class="secondary">Cancelar</button>
+                <div id="err-msg" class="error"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+async function setup2FA() {
+    const res = await apiFetch('/api/auth/2fa/setup', { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+        document.getElementById('qr-img').src = data.qrCode;
+        document.getElementById('secret-text').innerText = data.secret;
+        document.getElementById('setup-panel').style.display = 'block';
+        window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+    }
+}
+async function enable2FA() {
+    const codigo = document.getElementById('codigo').value;
+    const res = await apiFetch('/api/auth/2fa/enable', { method: 'POST', body: JSON.stringify({codigo}) });
+    const data = await res.json();
+    if(res.ok) {
+        document.getElementById('msg').innerText = '✓ 2FA Activado correctamente.';
+        document.getElementById('setup-panel').style.display = 'none';
+        document.getElementById('err-msg').innerText = '';
+        document.getElementById('codigo').value = '';
+    } else {
+        document.getElementById('err-msg').innerText = data.error;
+    }
+}
+async function disable2FA() {
+    if(!confirm('¿Estás seguro que deseas desactivar el 2FA? Tu cuenta será menos segura.')) return;
+    const res = await apiFetch('/api/auth/2fa/disable', { method: 'POST' });
+    if(res.ok) {
+        document.getElementById('msg').innerText = '✓ 2FA Desactivado.';
+        document.getElementById('setup-panel').style.display = 'none';
+        setTimeout(()=> { document.getElementById('msg').innerText=''; }, 4000);
+    }
+}
+</script>
+</body>
+</html>

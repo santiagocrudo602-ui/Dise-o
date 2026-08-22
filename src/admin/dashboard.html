@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magnet Admin - Trabajos</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js"></script>
+</head>
+<body>
+<nav class="nav">
+    <div class="nav-header">Magnet Admin</div>
+    <a href="/" style="color:var(--muted); font-size:12px; margin-top:-35px; margin-bottom:15px; background:none; padding:0; display:inline-block;">← Volver al sitio</a>
+    <a href="dashboard.html" class="active">Diseños & Colección</a>
+    <a href="perfil.html">Perfil & Contacto</a>
+    <a href="textos.html">Textos de la Página</a>
+    <a href="seguridad.html">Seguridad (2FA)</a>
+    <a href="#" onclick="logout()" class="logout">Cerrar Sesión</a>
+</nav>
+<div class="main-wrapper">
+    <div class="container">
+        <h1 class="page-title">Diseños</h1>
+        <p class="page-desc">Administra las prendas y trabajos que se muestran en la sección Colección.</p>
+        
+        <div class="card" id="form-card" style="display:none;">
+            <h2 id="form-title">Nuevo Diseño</h2>
+            <p class="sub" id="form-sub">Completa los datos para agregar una prenda a la web.</p>
+            <input type="hidden" id="t-id">
+            
+            <div class="row">
+                <div class="form-group">
+                    <label>Título / Nombre</label>
+                    <input type="text" id="t-titulo" placeholder="Ej: Campera Voltaje">
+                </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <input type="text" id="t-cat" placeholder="Ej: Abrigos">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Materiales / Descripción corta</label>
+                <textarea id="t-desc" rows="2" placeholder="Ej: Eco-cuero, tachas y corte asimétrico."></textarea>
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label>Orden de aparición</label>
+                    <input type="number" id="t-orden" placeholder="0 = primero" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Imagen</label>
+                    <input type="file" id="t-file" accept="image/png, image/jpeg">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>URL de Imagen (Autocompletado)</label>
+                <input type="text" id="t-img" placeholder="/uploads/... (se llena automáticamente al subir)">
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button onclick="saveTrabajo()">Guardar Diseño</button>
+                <button onclick="hideForm()" class="secondary">Cancelar</button>
+            </div>
+            <div id="form-msg" class="error"></div>
+        </div>
+        
+        <div style="margin-bottom: 20px; display:flex; justify-content: flex-end;">
+            <button onclick="showForm()">+ Agregar Diseño</button>
+        </div>
+        
+        <div class="card" style="padding: 0;">
+            <table id="table-trabajos">
+                <thead><tr><th>Orden</th><th>Título</th><th>Categoría</th><th>Acciones</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+let works = [];
+async function load() {
+    const res = await apiFetch('/api/admin/trabajos');
+    works = await res.json();
+    const tb = document.querySelector('#table-trabajos tbody');
+    tb.innerHTML = '';
+    works.forEach(w => {
+        tb.innerHTML += `<tr>
+            <td>${w.orden}</td>
+            <td style="font-weight:500;">${w.titulo}</td>
+            <td><span style="background:var(--bg-input); padding:4px 8px; border-radius:4px; font-size:12px;">${w.categoria || 'Sin categoría'}</span></td>
+            <td>
+                <a onclick="editT(${w.id})">Editar</a>
+                <a onclick="delT(${w.id})" class="del">Eliminar</a>
+            </td>
+        </tr>`;
+    });
+}
+function showForm(w = null) {
+    document.getElementById('form-card').style.display = 'block';
+    document.getElementById('form-msg').innerText = '';
+    document.getElementById('form-title').innerText = w ? 'Editar Diseño' : 'Nuevo Diseño';
+    document.getElementById('form-sub').innerText = w ? 'Modifica los datos del diseño existente.' : 'Completa los datos para agregar una prenda a la web.';
+    document.getElementById('t-id').value = w ? w.id : '';
+    document.getElementById('t-titulo').value = w ? w.titulo : '';
+    document.getElementById('t-desc').value = w ? w.descripcion : '';
+    document.getElementById('t-cat').value = w ? w.categoria : '';
+    document.getElementById('t-orden').value = w ? w.orden : '0';
+    document.getElementById('t-img').value = w ? w.imagen_url : '';
+    document.getElementById('t-file').value = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function hideForm() { document.getElementById('form-card').style.display = 'none'; }
+function editT(id) { const w = works.find(x => x.id === id); if(w) showForm(w); }
+async function delT(id) {
+    if(!confirm('¿Eliminar diseño definitivamente? Esto lo quitará de la web.')) return;
+    await apiFetch(`/api/admin/trabajos/${id}`, { method: 'DELETE' });
+    load();
+}
+async function saveTrabajo() {
+    const id = document.getElementById('t-id').value;
+    const fileInput = document.getElementById('t-file');
+    let imagen_url = document.getElementById('t-img').value;
+
+    if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append('imagen', fileInput.files[0]);
+        const uploadRes = await apiFetch('/api/admin/upload', { method: 'POST', body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok) imagen_url = uploadData.url;
+        else return document.getElementById('form-msg').innerText = uploadData.error;
+    }
+
+    const payload = {
+        titulo: document.getElementById('t-titulo').value,
+        descripcion: document.getElementById('t-desc').value,
+        categoria: document.getElementById('t-cat').value,
+        orden: parseInt(document.getElementById('t-orden').value) || 0,
+        imagen_url
+    };
+
+    const url = id ? `/api/admin/trabajos/${id}` : '/api/admin/trabajos';
+    const method = id ? 'PUT' : 'POST';
+    const res = await apiFetch(url, { method, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if(res.ok) { hideForm(); load(); }
+    else document.getElementById('form-msg').innerText = data.error;
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magnet Admin - Textos de la Página</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js"></script>
+</head>
+<body>
+<nav class="nav">
+    <div class="nav-header">Magnet Admin</div>
+    <a href="/" style="color:var(--muted); font-size:12px; margin-top:-35px; margin-bottom:15px; background:none; padding:0; display:inline-block;">← Volver al sitio</a>
+    <a href="dashboard.html">Diseños & Colección</a>
+    <a href="perfil.html">Perfil & Contacto</a>
+    <a href="textos.html" class="active">Textos de la Página</a>
+    <a href="seguridad.html">Seguridad (2FA)</a>
+    <a href="#" onclick="logout()" class="logout">Cerrar Sesión</a>
+</nav>
+<div class="main-wrapper">
+    <div class="container">
+        <h1 class="page-title">Textos de la Página</h1>
+        <p class="page-desc">Modifica cualquier texto estático del sitio web (títulos, bajadas, valores).</p>
+        
+        <div id="forms-container">Cargando...</div>
+        
+        <button onclick="saveTextos()" style="margin-top: 20px; font-size:16px;">Guardar Todos los Textos</button>
+        <span id="msg" class="success" style="display:inline-block; margin-left:15px;"></span>
+    </div>
+</div>
+<script>
+let currentTexts = {};
+const groups = [
+    {
+        title: 'Sección Principal (Hero)',
+        keys: ['hero_eyebrow', 'hero_title', 'hero_sub', 'hero_meta_1_title', 'hero_meta_1_text', 'hero_meta_2_title', 'hero_meta_2_text', 'hero_meta_3_title', 'hero_meta_3_text']
+    },
+    {
+        title: 'Sección Personalidad',
+        keys: ['pers_eyebrow', 'pers_title', 'pers_quote']
+    },
+    {
+        title: 'Sección Valores',
+        keys: ['val_title', 'val_note', 'val_1_num', 'val_1_title', 'val_1_text', 'val_2_num', 'val_2_title', 'val_2_text', 'val_3_num', 'val_3_title', 'val_3_text']
+    },
+    {
+        title: 'Sección Proceso',
+        keys: ['proceso_title', 'proc_1_num', 'proc_1_title', 'proc_1_text', 'proc_2_num', 'proc_2_title', 'proc_2_text', 'proc_3_num', 'proc_3_title', 'proc_3_text', 'proc_4_num', 'proc_4_title', 'proc_4_text']
+    },
+    {
+        title: 'Sección Contacto y Footer',
+        keys: ['contacto_eyebrow', 'contacto_title', 'contacto_text', 'footer_text']
+    }
+];
+
+async function load() {
+    const res = await apiFetch('/api/textos');
+    currentTexts = await res.json();
+    
+    const container = document.getElementById('forms-container');
+    container.innerHTML = '';
+    
+    groups.forEach(g => {
+        let html = `<div class="card"><h2>${g.title}</h2>`;
+        g.keys.forEach(k => {
+            const isTextarea = k.includes('text') || k.includes('sub') || k.includes('note');
+            html += `
+                <div class="form-group">
+                    <label>${k}</label>
+                    ${isTextarea 
+                        ? `<textarea id="txt_${k}" rows="3">${currentTexts[k] || ''}</textarea>` 
+                        : `<input type="text" id="txt_${k}" value="${currentTexts[k] || ''}">`}
+                </div>
+            `;
+        });
+        html += `</div>`;
+        container.innerHTML += html;
+    });
+}
+
+async function saveTextos() {
+    const payload = {};
+    groups.forEach(g => {
+        g.keys.forEach(k => {
+            payload[k] = document.getElementById(`txt_${k}`).value;
+        });
+    });
+    
+    const res = await apiFetch('/api/admin/textos', { method: 'PUT', body: JSON.stringify(payload) });
+    if (res.ok) {
+        document.getElementById('msg').innerText = 'Textos guardados correctamente';
+        setTimeout(() => document.getElementById('msg').innerText = '', 3000);
+    } else {
+        document.getElementById('msg').className = 'error';
+        document.getElementById('msg').innerText = 'Error al guardar';
+    }
+}
+load();
+</script>
+</body>
+</html>

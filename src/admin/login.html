@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magnet Admin - Login</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js"></script>
+</head>
+<body class="login-body">
+    <div class="card login-card">
+        <h2 style="font-family:'Unbounded',sans-serif; text-transform:uppercase; color:var(--red); font-size:24px; margin-bottom:10px;">Magnet Admin</h2>
+        <p class="sub">Ingresa tus credenciales para administrar el portfolio.</p>
+        
+        <div id="msg" class="error" style="margin-bottom:15px;"></div>
+        
+        <div id="step1">
+            <div class="form-group">
+                <label>Key de acceso</label>
+                <input type="password" id="key" placeholder="Tu contraseña secreta" />
+            </div>
+            <button onclick="doLogin()" style="width:100%; justify-content:center;">Ingresar</button>
+        </div>
+        
+        <div id="step2" style="display:none;">
+            <div class="form-group">
+                <label>Código 2FA (Authenticator)</label>
+                <input type="text" id="codigo" placeholder="000000" />
+            </div>
+            <button onclick="verify2FA()" style="width:100%; justify-content:center;">Verificar Código</button>
+        </div>
+    </div>
+
+<script>
+let partialToken = null;
+async function doLogin() {
+    const key = document.getElementById('key').value;
+    const res = await fetch('/api/auth/login', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ key })
+    });
+    const data = await res.json();
+    if (res.ok) {
+        if (data.requires2FA) {
+            partialToken = data.token;
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        } else {
+            setToken(data.token);
+            window.location.href = '/admin/dashboard.html';
+        }
+    } else {
+        document.getElementById('msg').innerText = data.error || 'Error de login';
+    }
+}
+async function verify2FA() {
+    const codigo = document.getElementById('codigo').value;
+    const res = await fetch('/api/auth/verify-2fa', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ token_parcial: partialToken, codigo })
+    });
+    const data = await res.json();
+    if (res.ok) {
+        setToken(data.token);
+        window.location.href = '/admin/dashboard.html';
+    } else {
+        document.getElementById('msg').innerText = data.error || 'Código incorrecto';
+    }
+}
+</script>
+</body>
+</html>

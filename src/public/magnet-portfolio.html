@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAGNET — Portfolio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --black:#08080a;
+  --black-2:#111114;
+  --black-3:#18181c;
+  --ink:#F4F2EE;
+  --muted:#9A98A0;
+  --red:#E11D3C;
+  --violet:#7C3AED;
+  --blue:#2F5CFF;
+  --chrome-a:#E7E9EE;
+  --chrome-b:#84899A;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--black);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+}
+img,svg{display:block;}
+a{color:inherit;}
+
+.chrome-text{
+  background:linear-gradient(120deg,var(--chrome-a) 0%,var(--chrome-b) 45%,var(--chrome-a) 70%,var(--chrome-b) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.eyebrow::before{
+  content:"";
+  width:16px;height:1px;
+  background:var(--red);
+}
+
+/* grain overlay */
+.grain{
+  position:fixed; inset:0;
+  pointer-events:none;
+  opacity:0.05;
+  z-index:50;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* iridescent blob */
+.blob{
+  position:absolute;
+  border-radius:42% 58% 63% 37% / 41% 44% 56% 59%;
+  filter:blur(70px);
+  mix-blend-mode:screen;
+  opacity:0.55;
+  will-change:transform;
+  animation:morph 16s ease-in-out infinite, spin 40s linear infinite;
+}
+@keyframes morph{
+  0%,100%{ border-radius:42% 58% 63% 37% / 41% 44% 56% 59%; }
+  33%{ border-radius:63% 37% 41% 59% / 55% 40% 60% 45%; }
+  66%{ border-radius:37% 63% 55% 45% / 63% 55% 45% 37%; }
+}
+@keyframes spin{
+  from{ transform:rotate(0deg) scale(1); }
+  to{ transform:rotate(360deg) scale(1); }
+}
+@media (prefers-reduced-motion:reduce){
+  .blob{ animation:none; }
+  html{ scroll-behavior:auto; }
+}
+
+/* NAV */
+.nav{
+  position:fixed; top:0; left:0; right:0;
+  z-index:40;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:22px 6vw;
+  backdrop-filter:blur(10px);
+  background:linear-gradient(to bottom, rgba(8,8,10,0.75), transparent);
+}
+.nav-mark{
+  font-family:'Unbounded',sans-serif;
+  font-weight:900;
+  font-size:20px;
+  letter-spacing:0.5px;
+  display:flex; align-items:center; gap:8px;
+}
+.nav-mark .star{ color:var(--red); font-size:16px; }
+.nav-links{ display:flex; gap:30px; }
+.nav-links a{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--muted);
+  transition:color .2s;
+}
+.nav-links a:hover{ color:var(--ink); }
+.nav-links a:focus-visible{ outline:2px solid var(--red); outline-offset:4px; }
+@media (max-width:760px){ .nav-links{ display:none; } }
+
+/* HERO */
+.hero{
+  position:relative;
+  min-height:100vh;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:0 6vw;
+  overflow:hidden;
+}
+.hero .blob.b1{
+  width:640px; height:640px; top:-220px; right:-160px;
+  background:conic-gradient(from 40deg, var(--red), var(--violet), var(--blue), var(--chrome-a), var(--red));
+}
+.hero .blob.b2{
+  width:340px; height:340px; bottom:-140px; left:-100px;
+  background:conic-gradient(from 200deg, var(--blue), var(--violet), var(--red), var(--chrome-a), var(--blue));
+  opacity:0.35;
+}
+.hero-inner{ position:relative; z-index:2; max-width:760px; }
+.hero-title{
+  font-family:'Unbounded',sans-serif;
+  font-weight:900;
+  font-size:clamp(46px, 8.5vw, 108px);
+  line-height:0.94;
+  text-transform:uppercase;
+  letter-spacing:-1px;
+  margin:18px 0 22px;
+}
+.hero-sub{
+  font-size:15.5px;
+  line-height:1.7;
+  color:var(--muted);
+  max-width:480px;
+}
+.hero-meta{
+  margin-top:46px;
+  display:flex; gap:36px; flex-wrap:wrap;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; letter-spacing:1px;
+  color:var(--muted);
+}
+.hero-meta b{ color:var(--ink); display:block; font-size:13px; margin-bottom:4px; letter-spacing:0.3px;}
+.scroll-cue{
+  position:absolute; bottom:34px; left:6vw;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px; letter-spacing:2px;
+  color:var(--muted);
+  display:flex; align-items:center; gap:8px;
+}
+.scroll-cue .line{ width:26px; height:1px; background:var(--muted); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse{ 0%,100%{opacity:.4;} 50%{opacity:1;} }
+
+/* SECTION shell */
+section{ position:relative; padding:120px 6vw; }
+.section-head{
+  display:flex; justify-content:space-between; align-items:flex-end;
+  gap:20px; flex-wrap:wrap;
+  margin-bottom:56px;
+}
+.section-title{
+  font-family:'Unbounded',sans-serif;
+  font-weight:700;
+  font-size:clamp(30px, 5vw, 54px);
+  text-transform:uppercase;
+  letter-spacing:-0.5px;
+  line-height:1;
+}
+.section-note{
+  font-size:13px; color:var(--muted); max-width:280px; line-height:1.6;
+}
+
+/* PERSONALIDAD */
+.personalidad{ background:var(--black-2); }
+.pers-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center;
+}
+@media (max-width:800px){ .pers-grid{ grid-template-columns:1fr; } }
+.portrait{
+  aspect-ratio:3/4;
+  border-radius:2px;
+  position:relative;
+  background:
+    repeating-linear-gradient(135deg, rgba(244,242,238,0.04) 0px, rgba(244,242,238,0.04) 2px, transparent 2px, transparent 12px),
+    linear-gradient(155deg, var(--red) 0%, var(--violet) 45%, var(--black) 100%);
+  filter:grayscale(0.25) contrast(1.05);
+}
+.portrait::after{
+  content:"";
+  position:absolute; inset:16px;
+  border:1px solid rgba(244,242,238,0.25);
+}
+.pers-text{ font-size:15.5px; line-height:1.85; color:#C7C5CB; max-width:48ch; }
+.pers-text strong{ color:var(--ink); }
+.pers-quote{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  letter-spacing:0.4px;
+  color:var(--ink);
+  margin-top:28px;
+  padding-left:16px;
+  border-left:2px solid var(--red);
+}
+
+/* VALORES */
+.valores{ background:var(--black); }
+.val-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(244,242,238,0.08); border:1px solid rgba(244,242,238,0.08); }
+@media (max-width:760px){ .val-grid{ grid-template-columns:1fr; } }
+.val-card{ background:var(--black); padding:40px 34px; }
+.val-num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--red); letter-spacing:1.5px; margin-bottom:22px; }
+.val-title{ font-family:'Unbounded',sans-serif; font-weight:700; font-size:19px; text-transform:uppercase; margin-bottom:12px; }
+.val-text{ font-size:13.5px; color:var(--muted); line-height:1.7; }
+
+/* COLECCION */
+.coleccion{ background:var(--black-2); }
+.gallery-grid{
+  display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:150px; gap:12px;
+}
+.piece{ grid-column:span 3; grid-row:span 2; }
+.piece.wide{ grid-column:span 4; }
+.piece.narrow{ grid-column:span 2; }
+.piece.tall{ grid-row:span 3; }
+@media (max-width:760px){
+  .gallery-grid{ grid-template-columns:repeat(2,1fr); }
+  .piece,.piece.wide,.piece.narrow{ grid-column:span 2; grid-row:span 2; }
+}
+.piece-card{
+  height:100%; border-radius:2px; overflow:hidden;
+  position:relative;
+  display:flex; align-items:flex-end; padding:18px;
+  transition:transform .35s ease;
+}
+.piece-card:hover{ transform:scale(1.015); }
+.piece-tag{ font-size:13px; font-weight:600; text-shadow:0 1px 6px rgba(0,0,0,0.5); }
+.piece-tag span{ display:block; font-size:10.5px; font-weight:400; color:rgba(244,242,238,0.75); margin-top:3px; font-family:'JetBrains Mono',monospace; letter-spacing:0.3px;}
+
+/* PALETA */
+.paleta{ background:var(--black); }
+.swatches{ display:flex; gap:14px; flex-wrap:wrap; }
+.swatch{
+  flex:1 1 160px; min-width:150px;
+  border:1px solid rgba(244,242,238,0.1);
+  border-radius:2px; overflow:hidden;
+}
+.swatch-color{ height:90px; }
+.swatch-label{
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:1px;
+  padding:10px 12px; color:var(--muted); text-transform:uppercase;
+  display:flex; justify-content:space-between;
+}
+.swatch-label b{ color:var(--ink); font-weight:500; }
+
+/* PROCESO */
+.proceso{ background:var(--black-2); }
+.steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(244,242,238,0.08); border:1px solid rgba(244,242,238,0.08);}
+@media (max-width:800px){ .steps{ grid-template-columns:1fr 1fr; } }
+@media (max-width:480px){ .steps{ grid-template-columns:1fr; } }
+.step{ background:var(--black-2); padding:34px 26px; }
+.step-num{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--red); margin-bottom:20px; letter-spacing:1px;}
+.step-title{ font-family:'Unbounded',sans-serif; font-weight:700; font-size:15px; text-transform:uppercase; margin-bottom:10px; }
+.step-text{ font-size:12.5px; color:var(--muted); line-height:1.7; }
+
+/* CONTACTO */
+.contacto{
+  background:var(--black);
+  text-align:center;
+  padding-top:150px; padding-bottom:110px;
+  position:relative;
+  overflow:hidden;
+}
+.contacto .blob{
+  width:520px; height:520px; top:-140px; left:50%; transform:translateX(-50%);
+  background:conic-gradient(from 120deg, var(--violet), var(--red), var(--blue), var(--chrome-a), var(--violet));
+  opacity:0.4;
+}
+.contacto-inner{ position:relative; z-index:2; }
+.contacto .eyebrow{ justify-content:center; }
+.contacto .eyebrow::before{ display:none; }
+.contact-title{
+  font-family:'Unbounded',sans-serif; font-weight:900;
+  font-size:clamp(34px,7vw,64px); text-transform:uppercase;
+  margin:14px 0 20px; letter-spacing:-1px;
+}
+.contact-text{ color:var(--muted); font-size:14px; max-width:420px; margin:0 auto 36px; line-height:1.7; }
+.contact-links{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.contact-btn{
+  display:flex; align-items:center; gap:9px;
+  padding:14px 28px; border-radius:2px;
+  text-decoration:none; font-size:13px; font-weight:600;
+  letter-spacing:0.3px; transition:transform .2s, background .2s;
+}
+.contact-btn.primary{ background:var(--red); color:#fff; }
+.contact-btn.primary:hover{ background:#c81531; transform:translateY(-2px); }
+.contact-btn.secondary{ border:1px solid rgba(244,242,238,0.25); color:var(--ink); }
+.contact-btn.secondary:hover{ border-color:var(--ink); transform:translateY(-2px); }
+.contact-btn:focus-visible{ outline:2px solid var(--chrome-a); outline-offset:3px; }
+
+.foot{
+  text-align:center; padding:36px 6vw;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px; letter-spacing:1px; color:#54525a;
+  border-top:1px solid rgba(244,242,238,0.07);
+}
+
+/* reveal on scroll */
+.reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.in{ opacity:1; transform:none; }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(8,8,10,0.85); backdrop-filter: blur(8px);
+  z-index: 100; display: flex; justify-content: center; align-items: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal-content {
+  background: var(--black-2); border: 1px solid rgba(244,242,238,0.1); width: 100%; max-width: 900px;
+  position: relative; transform: translateY(20px); transition: transform 0.3s;
+  display: flex; border-radius: 4px; overflow: hidden;
+}
+@media (max-width: 760px) {
+  .modal-content { flex-direction: column; max-height: 90vh; overflow-y: auto; }
+}
+.modal-overlay.active .modal-content { transform: translateY(0); }
+.modal-close {
+  position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); border: none;
+  color: var(--ink); font-size: 24px; cursor: pointer; width: 36px; height: 36px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10;
+}
+.modal-body-wrapper { display: flex; width: 100%; }
+@media (max-width: 760px) { .modal-body-wrapper { flex-direction: column; } }
+.modal-left {
+  flex: 1; background: var(--black); min-height: 350px;
+  background-size: cover; background-position: center;
+}
+.modal-right {
+  flex: 1; padding: 50px 40px; display: flex; flex-direction: column; justify-content: center;
+}
+.modal-cat { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-bottom: 10px; text-transform: uppercase; }
+.modal-title { font-family: 'Unbounded', sans-serif; font-size: 28px; text-transform: uppercase; margin-bottom: 15px; line-height: 1.1; }
+.modal-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 30px; }
+.modal-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--red); color: white; padding: 12px 24px; border-radius: 2px;
+  text-decoration: none; font-weight: 600; font-size: 13px; letter-spacing: 0.5px;
+  align-self: flex-start; transition: background 0.2s;
+}
+.modal-btn:hover { background: #c81531; }
+.modal-error { color: var(--red); font-family: 'JetBrains Mono', monospace; padding: 40px; }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<nav class="nav">
+  <div class="nav-mark"><span class="star">✦</span>MAGNET</div>
+  <div class="nav-links">
+    <a href="#personalidad">Personalidad</a>
+    <a href="#coleccion">Colección</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="hero-inner">
+    <div class="eyebrow" data-text="hero_eyebrow">ADN de marca — moda urbana</div>
+    <h1 class="hero-title" data-text="hero_title">Un imán<br>para los que<br>se atreven</h1>
+    <p class="hero-sub" data-text="hero_sub">[Nombre de la diseñadora] — MAGNET. Diseño desestructurado, artesanal y sin pedir permiso. Cada pieza está hecha para atraer, no para pasar desapercibida.</p>
+    <div class="hero-meta">
+      <div><b data-text="hero_meta_1_title">Estilo</b><span data-text="hero_meta_1_text">Rockero · Sensual · Urbano</span></div>
+      <div><b data-text="hero_meta_2_title">Cultura</b><span data-text="hero_meta_2_text">Vida nocturna, arte y música</span></div>
+      <div><b data-text="hero_meta_3_title">Origen</b><span data-text="hero_meta_3_text">Hecho a mano, pieza por pieza</span></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span class="line"></span>DESLIZÁ</div>
+</header>
+
+<section class="personalidad reveal" id="personalidad">
+  <div class="pers-grid">
+    <div class="portrait"></div>
+    <div>
+      <div class="eyebrow" data-text="pers_eyebrow">Personalidad</div>
+      <h2 class="section-title" data-text="pers_title" style="margin:16px 0 22px; font-size:clamp(28px,4vw,42px);">Desestructurada.<br>Rebelde. Arriesgada.</h2>
+      <p class="pers-text">
+        [Espacio para la historia real de la diseñadora: cómo empezó, qué la inspira, qué la distingue.]
+        MAGNET se expresa libremente a través del arte y la moda — desafía las normas y se rodea de gente creativa y apasionada.
+        Cada colección busca inspirar a que cada persona se anime a <strong>ser ella misma</strong>, sin filtros.
+      </p>
+      <p class="pers-quote" data-text="pers_quote">"Cada puntada tiene una intención. Cada pieza, una actitud."</p>
+    </div>
+  </div>
+</section>
+
+<section class="valores reveal">
+  <div class="section-head">
+    <h2 class="section-title" data-text="val_title">Valores</h2>
+    <p class="section-note" data-text="val_note">Originalidad, libertad y distorsión — los tres ejes que guían cada diseño de la marca.</p>
+  </div>
+  <div class="val-grid">
+    <div class="val-card">
+      <div class="val-num" data-text="val_1_num">01 / ORIGINALIDAD</div>
+      <div class="val-title" data-text="val_1_title">Nada de moldes ajenos</div>
+      <div class="val-text" data-text="val_1_text">Cada estampa y cada corte se piensa desde cero. Innovar en el arte y en la industria es el punto de partida, no la excepción.</div>
+    </div>
+    <div class="val-card">
+      <div class="val-num" data-text="val_2_num">02 / LIBERTAD</div>
+      <div class="val-title" data-text="val_2_title">Ropa que no ata</div>
+      <div class="val-text" data-text="val_2_text">Siluetas amplias, cinturas regulables, telas que se mueven. La comodidad no se negocia, se fusiona con el estilo.</div>
+    </div>
+    <div class="val-card">
+      <div class="val-num" data-text="val_3_num">03 / DISTORSIÓN</div>
+      <div class="val-title" data-text="val_3_title">La belleza del caos</div>
+      <div class="val-text" data-text="val_3_text">Lavados intensos, costuras expuestas, roturas estratégicas. El desgaste es parte de la historia de la prenda.</div>
+    </div>
+  </div>
+</section>
+
+<section class="coleccion reveal" id="coleccion">
+  <div class="section-head">
+    <h2 class="section-title">Colección</h2>
+    <p class="section-note">Selección de piezas recientes. Cada imagen se reemplaza por fotografía real del producto.</p>
+  </div>
+  <div class="gallery-grid">
+    <div class="piece wide">
+      <div class="piece-card" style="background:linear-gradient(155deg,#E11D3C,#08080a);">
+        <div class="piece-tag">Campera Voltaje<span>Cuero reciclado, herrajes metálicos</span></div>
+      </div>
+    </div>
+    <div class="piece narrow">
+      <div class="piece-card" style="background:linear-gradient(155deg,#7C3AED,#08080a);">
+        <div class="piece-tag">Top Fricción<span>Malla técnica, costuras vistas</span></div>
+      </div>
+    </div>
+    <div class="piece tall">
+      <div class="piece-card" style="background:linear-gradient(155deg,#2F5CFF,#08080a);">
+        <div class="piece-tag">Pantalón Static<span>Denim distressed, tachas</span></div>
+      </div>
+    </div>
+    <div class="piece narrow">
+      <div class="piece-card" style="background:linear-gradient(155deg,#84899A,#08080a);">
+        <div class="piece-tag">Chaleco Nocturno<span>Cadenas y broches metal</span></div>
+      </div>
+    </div>
+    <div class="piece wide">
+      <div class="piece-card" style="background:linear-gradient(155deg,#E11D3C,#7C3AED,#08080a);">
+        <div class="piece-tag">Conjunto Magnetic<span>Estampa artesanal, tiraje limitado</span></div>
+      </div>
+    </div>
+    <div class="piece narrow">
+      <div class="piece-card" style="background:linear-gradient(155deg,#2F5CFF,#7C3AED,#08080a);">
+        <div class="piece-tag">Buzo Static<span>Algodón pesado, print a mano</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proceso reveal" id="proceso">
+  <div class="section-head" style="margin-bottom:0;">
+    <h2 class="section-title" data-text="proceso_title">Cómo nace cada pieza</h2>
+  </div>
+  <div class="steps" style="margin-top:56px;">
+    <div class="step">
+      <div class="step-num" data-text="proc_1_num">01</div>
+      <div class="step-title" data-text="proc_1_title">Boceto &amp; actitud</div>
+      <div class="step-text" data-text="proc_1_text">No empezamos con un molde, empezamos con una idea. Una silueta, una canción o un sentimiento de rebeldía.</div>
+    </div>
+    <div class="step">
+      <div class="step-num" data-text="proc_2_num">02</div>
+      <div class="step-title" data-text="proc_2_title">Selección de material</div>
+      <div class="step-text" data-text="proc_2_text">Buscamos texturas con peso. Denims rígidos, cueros, algodones pesados y avíos metálicos de alta calidad.</div>
+    </div>
+    <div class="step">
+      <div class="step-num" data-text="proc_3_num">03</div>
+      <div class="step-title" data-text="proc_3_title">Patronaje y corte</div>
+      <div class="step-text" data-text="proc_3_text">Moldería experimental. Desarmamos lo clásico para armar algo con mucho más carácter y movimiento.</div>
+    </div>
+    <div class="step">
+      <div class="step-num" data-text="proc_4_num">04</div>
+      <div class="step-title" data-text="proc_4_title">Intervención final</div>
+      <div class="step-text" data-text="proc_4_text">El toque final es manual. Roturas, tachas puestas a mano o tinturas especiales que hacen que la pieza sea única.</div>
+    </div>
+  </div>
+</section>
+
+<section class="contacto" id="contacto">
+  <div class="blob"></div>
+  <div class="contacto-inner">
+    <div class="eyebrow" data-text="contacto_eyebrow">Te leo</div>
+    <h2 class="contact-title" data-text="contacto_title">Sumate a la manada</h2>
+    <p class="contact-text" data-text="contacto_text">Para consultas, pedidos a medida o simplemente conocer más de la marca, escribime por WhatsApp o seguí el proceso día a día en Instagram.</p>
+    <div class="contact-links">
+      <a class="contact-btn primary" href="#" onclick="return false;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.4-1.5-.9-.8-1.5-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.5.1-.2 0-.4 0-.5C10 8.6 9.5 7.4 9.3 7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z" fill="#fff"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5-1.3c1.4.8 3.1 1.3 4.9 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3C4.2 15.1 3.8 13.6 3.8 12c0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.7 8.2-8.2 8.2z" fill="#fff"/></svg>
+        Escribir por WhatsApp
+      </a>
+      <a class="contact-btn secondary" href="#" onclick="return false;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor"/></svg>
+        Ver Instagram
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="foot">© <span id="yr"></span> — <span data-text="footer_text">MAGNET. Prototipo de presentación.</span></div>
+
+<div class="modal-overlay" id="work-modal">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close">&times;</button>
+    <div id="modal-body" class="modal-body-wrapper"></div>
+  </div>
+</div>
+
+<a href="/admin/dashboard.html" id="admin-float-btn" style="display:none; position:fixed; bottom:24px; right:24px; background:var(--red); color:white; padding:10px 20px; border-radius:50px; z-index:90; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; text-decoration:none; box-shadow:0 4px 12px rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.2); transition:transform 0.2s;">Panel Admin ✦</a>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  const reveals = document.querySelectorAll('.reveal');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(prefersReduced){
+    reveals.forEach(el => el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => io.observe(el));
+  }
+  
+  // API Integration
+  async function loadTextos() {
+    try {
+      const res = await fetch('/api/textos');
+      if (res.ok) {
+        const textos = await res.json();
+        document.querySelectorAll('[data-text]').forEach(el => {
+          const key = el.getAttribute('data-text');
+          if (textos[key]) {
+            el.innerHTML = textos[key];
+          }
+        });
+      }
+    } catch (err) { console.error('Error cargando textos', err); }
+  }
+
+  async function loadPerfil() {
+    try {
+      const res = await fetch('/api/perfil');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.texto_sobre_mi) {
+          document.querySelector('.pers-text').innerHTML = data.texto_sobre_mi;
+        }
+        if (data.foto_perfil_url) {
+          document.querySelector('.portrait').style.backgroundImage = `url('${data.foto_perfil_url}')`;
+        }
+      }
+    } catch (err) { console.error('Error cargando perfil', err); }
+  }
+
+  async function loadContactos() {
+    try {
+      const res = await fetch('/api/contactos');
+      if (res.ok) {
+        const contactos = await res.json();
+        const container = document.querySelector('.contact-links');
+        container.innerHTML = '';
+        contactos.forEach(c => {
+          const btn = document.createElement('a');
+          btn.className = `contact-btn ${c.tipo === 'Instagram' ? 'secondary' : 'primary'}`;
+          btn.href = c.valor.startsWith('http') || c.valor.startsWith('mailto') || c.valor.startsWith('wa.me') || c.valor.startsWith('tel') ? c.valor : '#';
+          if (btn.href === '#') btn.onclick = () => false;
+          
+          let icon = '';
+          if (c.tipo === 'WhatsApp') icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.4-1.5-.9-.8-1.5-1.8-1.6-2.1-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.5.1-.2 0-.4 0-.5C10 8.6 9.5 7.4 9.3 7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.6.2-1.2.2-1.3-.1-.1-.3-.2-.6-.3z" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.9.5 3.6 1.4 5.1L2 22l5-1.3c1.4.8 3.1 1.3 4.9 1.3 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3 .8.8-2.9-.2-.3C4.2 15.1 3.8 13.6 3.8 12c0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2-3.7 8.2-8.2 8.2z" fill="currentColor"/></svg>`;
+          else if (c.tipo === 'Instagram') icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor"/></svg>`;
+          else if (c.tipo === 'Email') icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+          
+          btn.innerHTML = `${icon} ${c.tipo}: ${c.valor}`;
+          container.appendChild(btn);
+        });
+      }
+    } catch (err) { console.error('Error cargando contactos', err); }
+  }
+
+  async function loadTrabajos() {
+    try {
+      const res = await fetch('/api/trabajos');
+      if (res.ok) {
+        const trabajos = await res.json();
+        const container = document.querySelector('.gallery-grid');
+        container.innerHTML = '';
+        
+        const classes = ['piece wide', 'piece narrow', 'piece tall', 'piece narrow', 'piece wide', 'piece narrow'];
+        const gradients = [
+          'linear-gradient(155deg,#E11D3C,#08080a)',
+          'linear-gradient(155deg,#7C3AED,#08080a)',
+          'linear-gradient(155deg,#2F5CFF,#08080a)',
+          'linear-gradient(155deg,#84899A,#08080a)',
+          'linear-gradient(155deg,#E11D3C,#7C3AED,#08080a)',
+          'linear-gradient(155deg,#2F5CFF,#7C3AED,#08080a)'
+        ];
+        
+        trabajos.forEach((t, i) => {
+          const div = document.createElement('div');
+          div.className = classes[i % classes.length];
+          
+          const card = document.createElement('div');
+          card.className = 'piece-card';
+          card.style.cursor = 'pointer';
+          
+          if (t.imagen_url) {
+            card.style.backgroundImage = `url('${t.imagen_url}')`;
+            card.style.backgroundSize = 'cover';
+            card.style.backgroundPosition = 'center';
+          } else {
+            card.style.background = gradients[i % gradients.length];
+          }
+          
+          card.innerHTML = `<div class="piece-tag">${t.titulo}<span>${t.descripcion}</span></div>`;
+          card.onclick = () => openModal(t.id);
+          
+          div.appendChild(card);
+          container.appendChild(div);
+        });
+      }
+    } catch (err) { console.error('Error cargando trabajos', err); }
+  }
+
+  const modalOverlay = document.getElementById('work-modal');
+  const modalBody = document.getElementById('modal-body');
+  const modalClose = document.getElementById('modal-close');
+
+  modalClose.onclick = () => modalOverlay.classList.remove('active');
+  modalOverlay.onclick = (e) => { if(e.target === modalOverlay) modalOverlay.classList.remove('active'); };
+
+  async function openModal(id) {
+    modalBody.innerHTML = '<div style="padding:40px;">Cargando...</div>';
+    modalOverlay.classList.add('active');
+    try {
+      const res = await fetch(`/api/trabajos/${id}`);
+      if (res.status === 404) {
+        modalBody.innerHTML = '<div class="modal-error">Este diseño ya no está disponible</div>';
+        return;
+      }
+      if (res.ok) {
+        const data = await res.json();
+        const bgStyle = data.imagen_url ? `background-image: url('${data.imagen_url}')` : `background: linear-gradient(155deg,#E11D3C,#08080a)`;
+        modalBody.innerHTML = `
+          <div class="modal-left" style="${bgStyle}"></div>
+          <div class="modal-right">
+            <div class="modal-cat">${data.categoria || 'Sin categoría'}</div>
+            <div class="modal-title">${data.titulo}</div>
+            <div class="modal-desc">${data.descripcion}</div>
+            <a href="#contacto" class="modal-btn" onclick="document.getElementById('modal-close').click()">Consultar por este diseño</a>
+          </div>
+        `;
+      }
+    } catch (err) {
+      modalBody.innerHTML = '<div class="modal-error">Error al cargar la información</div>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadTextos();
+    loadPerfil();
+    loadContactos();
+    loadTrabajos();
+    
+    if (localStorage.getItem('jwt')) {
+      document.getElementById('admin-float-btn').style.display = 'block';
+    }
+  });
+</script>
+
+</body>
+</html>
