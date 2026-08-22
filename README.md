@@ -29,3 +29,4 @@ npm start
 - URL de administración: `http://localhost:3000/admin/login.html`
 - Key de acceso: `magnet2026`
 # Dise-o
+# Dise-o
