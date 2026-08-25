@@ -5,24 +5,24 @@ const getTrabajos = (req, res) => {
 };
 
 const createTrabajo = (req, res) => {
-    const { titulo, descripcion, imagen_url, categoria, orden } = req.body;
+    const { titulo, descripcion, imagen_url, imagenes_extra, categoria, orden, coleccion_id } = req.body;
     if (!titulo || !imagen_url) {
         return res.status(400).json({ error: 'Falta título o imagen_url' });
     }
     const id = AdminTrabajosModel.create({
-        titulo, descripcion, imagen_url, categoria, orden, administrador_id: req.adminId
+        titulo, descripcion, imagen_url, imagenes_extra: JSON.stringify(imagenes_extra || []), categoria, orden, coleccion_id: coleccion_id || null, administrador_id: req.adminId
     });
     res.json({ success: true, id });
 };
 
 const updateTrabajo = (req, res) => {
     const { id } = req.params;
-    const { titulo, descripcion, imagen_url, categoria, orden } = req.body;
+    const { titulo, descripcion, imagen_url, imagenes_extra, categoria, orden, coleccion_id } = req.body;
     if (!titulo || !imagen_url) {
         return res.status(400).json({ error: 'Falta título o imagen_url' });
     }
     const changes = AdminTrabajosModel.update(id, {
-        titulo, descripcion, imagen_url, categoria, orden
+        titulo, descripcion, imagen_url, imagenes_extra: JSON.stringify(imagenes_extra || []), categoria, orden, coleccion_id: coleccion_id || null
     });
     if (changes === 0) return res.status(404).json({ error: 'No encontrado' });
     res.json({ success: true });
@@ -43,6 +43,14 @@ const uploadImage = (req, res) => {
     res.json({ url });
 };
 
+const uploadMultipleImages = (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: 'Faltan archivos' });
+    }
+    const urls = req.files.map(f => `/uploads/${f.filename}`);
+    res.json({ urls });
+};
+
 module.exports = {
-    getTrabajos, createTrabajo, updateTrabajo, deleteTrabajo, uploadImage
+    getTrabajos, createTrabajo, updateTrabajo, deleteTrabajo, uploadImage, uploadMultipleImages
 };

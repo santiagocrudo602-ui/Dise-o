@@ -13,9 +13,9 @@
   --black-3:#18181c;
   --ink:#F4F2EE;
   --muted:#9A98A0;
-  --red:#E11D3C;
-  --violet:#7C3AED;
-  --blue:#2F5CFF;
+  --red:#D5CFBF;
+  --violet:#8A8E91;
+  --blue:#3B3B3B;
   --chrome-a:#E7E9EE;
   --chrome-b:#84899A;
 }
@@ -232,26 +232,54 @@ section{ position:relative; padding:120px 6vw; }
 
 /* COLECCION */
 .coleccion{ background:var(--black-2); }
-.gallery-grid{
-  display:grid; grid-template-columns:repeat(6,1fr); grid-auto-rows:150px; gap:12px;
+.gallery-grid {
+  column-count: 3;
+  column-gap: 12px;
+  width: 100%;
 }
-.piece{ grid-column:span 3; grid-row:span 2; }
-.piece.wide{ grid-column:span 4; }
-.piece.narrow{ grid-column:span 2; }
-.piece.tall{ grid-row:span 3; }
-@media (max-width:760px){
-  .gallery-grid{ grid-template-columns:repeat(2,1fr); }
-  .piece,.piece.wide,.piece.narrow{ grid-column:span 2; grid-row:span 2; }
+@media (max-width: 900px) {
+  .gallery-grid { column-count: 2; }
 }
-.piece-card{
-  height:100%; border-radius:2px; overflow:hidden;
-  position:relative;
-  display:flex; align-items:flex-end; padding:18px;
-  transition:transform .35s ease;
+@media (max-width: 600px) {
+  .gallery-grid { column-count: 1; }
 }
-.piece-card:hover{ transform:scale(1.015); }
-.piece-tag{ font-size:13px; font-weight:600; text-shadow:0 1px 6px rgba(0,0,0,0.5); }
-.piece-tag span{ display:block; font-size:10.5px; font-weight:400; color:rgba(244,242,238,0.75); margin-top:3px; font-family:'JetBrains Mono',monospace; letter-spacing:0.3px;}
+.piece-card {
+  break-inside: avoid;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  transition: transform .35s ease;
+  background: var(--black);
+  cursor: pointer;
+  display: block; /* acts as container */
+}
+.piece-card:hover { transform: translateY(-4px); }
+.piece-img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  /* if no image, we can just give it a min-height */
+  min-height: 200px;
+}
+.piece-tag {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 18px 18px;
+  background: linear-gradient(to top, rgba(8,8,10,0.95) 0%, transparent 100%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: white;
+  letter-spacing: 0.5px;
+}
+.piece-tag span {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  color: var(--muted);
+  font-size: 12.5px;
+  margin-top: 4px;
+  letter-spacing: 0;
+}
 
 /* PALETA */
 .paleta{ background:var(--black); }
@@ -366,6 +394,69 @@ section{ position:relative; padding:120px 6vw; }
 }
 .modal-btn:hover { background: #c81531; }
 .modal-error { color: var(--red); font-family: 'JetBrains Mono', monospace; padding: 40px; }
+
+/* Carousel */
+.carousel-container {
+  position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.carousel-slide {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+  opacity: 0; transition: opacity 0.4s ease; pointer-events: none;
+}
+.carousel-slide.active { opacity: 1; pointer-events: all; }
+.carousel-btn {
+  position: absolute; top: 50%; transform: translateY(-50%); background: rgba(8,8,10,0.6);
+  border: 1px solid rgba(244,242,238,0.2); color: white; width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;
+  z-index: 10; font-size: 18px;
+}
+.carousel-btn:hover { background: var(--red); }
+.carousel-prev { left: 15px; }
+.carousel-next { right: 15px; }
+.carousel-dots {
+  position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; z-index: 10;
+}
+.carousel-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: background 0.2s;
+}
+.carousel-dot.active { background: var(--red); }
+
+/* Inspiration Banner */
+.inspiration-banner {
+    width: 100%;
+    height: 60vh;
+    min-height: 400px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center; 
+    position: relative;
+    margin-bottom: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+@media (max-width: 768px) {
+    .inspiration-banner { height: 60vh; }
+}
+.inspiration-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(8,8,10,0.9), transparent);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 30px;
+}
+.inspiration-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+.inspiration-desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 600px;
+}
 </style>
 </head>
 <body>
@@ -438,44 +529,7 @@ section{ position:relative; padding:120px 6vw; }
   </div>
 </section>
 
-<section class="coleccion reveal" id="coleccion">
-  <div class="section-head">
-    <h2 class="section-title">Colección</h2>
-    <p class="section-note">Selección de piezas recientes. Cada imagen se reemplaza por fotografía real del producto.</p>
-  </div>
-  <div class="gallery-grid">
-    <div class="piece wide">
-      <div class="piece-card" style="background:linear-gradient(155deg,#E11D3C,#08080a);">
-        <div class="piece-tag">Campera Voltaje<span>Cuero reciclado, herrajes metálicos</span></div>
-      </div>
-    </div>
-    <div class="piece narrow">
-      <div class="piece-card" style="background:linear-gradient(155deg,#7C3AED,#08080a);">
-        <div class="piece-tag">Top Fricción<span>Malla técnica, costuras vistas</span></div>
-      </div>
-    </div>
-    <div class="piece tall">
-      <div class="piece-card" style="background:linear-gradient(155deg,#2F5CFF,#08080a);">
-        <div class="piece-tag">Pantalón Static<span>Denim distressed, tachas</span></div>
-      </div>
-    </div>
-    <div class="piece narrow">
-      <div class="piece-card" style="background:linear-gradient(155deg,#84899A,#08080a);">
-        <div class="piece-tag">Chaleco Nocturno<span>Cadenas y broches metal</span></div>
-      </div>
-    </div>
-    <div class="piece wide">
-      <div class="piece-card" style="background:linear-gradient(155deg,#E11D3C,#7C3AED,#08080a);">
-        <div class="piece-tag">Conjunto Magnetic<span>Estampa artesanal, tiraje limitado</span></div>
-      </div>
-    </div>
-    <div class="piece narrow">
-      <div class="piece-card" style="background:linear-gradient(155deg,#2F5CFF,#7C3AED,#08080a);">
-        <div class="piece-tag">Buzo Static<span>Algodón pesado, print a mano</span></div>
-      </div>
-    </div>
-  </div>
-</section>
+<div id="colecciones-wrapper"></div>
 
 <section class="proceso reveal" id="proceso">
   <div class="section-head" style="margin-bottom:0;">
@@ -612,46 +666,76 @@ section{ position:relative; padding:120px 6vw; }
 
   async function loadTrabajos() {
     try {
-      const res = await fetch('/api/trabajos');
+      const res = await fetch('/api/colecciones');
       if (res.ok) {
-        const trabajos = await res.json();
-        const container = document.querySelector('.gallery-grid');
-        container.innerHTML = '';
+        const colecciones = await res.json();
+        const wrapper = document.getElementById('colecciones-wrapper');
+        wrapper.innerHTML = '';
         
         const classes = ['piece wide', 'piece narrow', 'piece tall', 'piece narrow', 'piece wide', 'piece narrow'];
         const gradients = [
-          'linear-gradient(155deg,#E11D3C,#08080a)',
-          'linear-gradient(155deg,#7C3AED,#08080a)',
-          'linear-gradient(155deg,#2F5CFF,#08080a)',
-          'linear-gradient(155deg,#84899A,#08080a)',
-          'linear-gradient(155deg,#E11D3C,#7C3AED,#08080a)',
-          'linear-gradient(155deg,#2F5CFF,#7C3AED,#08080a)'
+          'linear-gradient(155deg,#D5CFBF,#08080a)',
+          'linear-gradient(155deg,#8A8E91,#08080a)',
+          'linear-gradient(155deg,#3B3B3B,#08080a)',
+          'linear-gradient(155deg,#84899A,#08080a)'
         ];
         
-        trabajos.forEach((t, i) => {
-          const div = document.createElement('div');
-          div.className = classes[i % classes.length];
+        colecciones.forEach((col) => {
+          if(!col.trabajos || col.trabajos.length === 0) return;
           
-          const card = document.createElement('div');
-          card.className = 'piece-card';
-          card.style.cursor = 'pointer';
+          const section = document.createElement('section');
+          section.className = 'coleccion reveal in'; 
+          section.id = `col-${col.id || 'otros'}`;
           
-          if (t.imagen_url) {
-            card.style.backgroundImage = `url('${t.imagen_url}')`;
-            card.style.backgroundSize = 'cover';
-            card.style.backgroundPosition = 'center';
+          let bannerHTML = '';
+          if (col.id !== null) {
+              const bgStyle = col.imagen_inspiracion_url ? `background-image: url('${col.imagen_inspiracion_url}')` : `background: #111`;
+              bannerHTML = `
+                <div class="inspiration-banner" style="${bgStyle}">
+                    <div class="inspiration-overlay">
+                        <div class="inspiration-title">${col.nombre}</div>
+                        <div class="inspiration-desc">${col.descripcion || ''}</div>
+                    </div>
+                </div>
+              `;
           } else {
-            card.style.background = gradients[i % gradients.length];
+              bannerHTML = `
+                  <div class="section-head">
+                    <h2 class="section-title">${col.nombre}</h2>
+                  </div>
+              `;
           }
           
-          card.innerHTML = `<div class="piece-tag">${t.titulo}<span>${t.descripcion}</span></div>`;
-          card.onclick = () => openModal(t.id);
+          const grid = document.createElement('div');
+          grid.className = 'gallery-grid';
           
-          div.appendChild(card);
-          container.appendChild(div);
+          col.trabajos.forEach((t, i) => {
+            const card = document.createElement('div');
+            card.className = 'piece-card';
+            card.onclick = () => openModal(t.id);
+            
+            let imgHTML = '';
+            if (t.imagen_url) {
+              imgHTML = `<img src="${t.imagen_url}" class="piece-img" alt="${t.titulo}">`;
+            } else {
+              const grad = gradients[i % gradients.length];
+              imgHTML = `<div class="piece-img" style="background:${grad}"></div>`;
+            }
+            
+            card.innerHTML = `
+              ${imgHTML}
+              <div class="piece-tag">${t.titulo}<span>${t.descripcion || ''}</span></div>
+            `;
+            
+            grid.appendChild(card);
+          });
+          
+          section.innerHTML = bannerHTML;
+          section.appendChild(grid);
+          wrapper.appendChild(section);
         });
       }
-    } catch (err) { console.error('Error cargando trabajos', err); }
+    } catch (err) { console.error('Error cargando colecciones', err); }
   }
 
   const modalOverlay = document.getElementById('work-modal');
@@ -661,9 +745,32 @@ section{ position:relative; padding:120px 6vw; }
   modalClose.onclick = () => modalOverlay.classList.remove('active');
   modalOverlay.onclick = (e) => { if(e.target === modalOverlay) modalOverlay.classList.remove('active'); };
 
+  let currentSlide = 0;
+  window.changeSlide = function(dir) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.carousel-dot');
+    if(!slides.length) return;
+    slides[currentSlide].classList.remove('active');
+    dots[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + dir + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+  };
+  window.goToSlide = function(index) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.carousel-dot');
+    if(!slides.length) return;
+    slides[currentSlide].classList.remove('active');
+    dots[currentSlide].classList.remove('active');
+    currentSlide = index;
+    slides[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+  };
+
   async function openModal(id) {
     modalBody.innerHTML = '<div style="padding:40px;">Cargando...</div>';
     modalOverlay.classList.add('active');
+    currentSlide = 0;
     try {
       const res = await fetch(`/api/trabajos/${id}`);
       if (res.status === 404) {
@@ -672,9 +779,38 @@ section{ position:relative; padding:120px 6vw; }
       }
       if (res.ok) {
         const data = await res.json();
-        const bgStyle = data.imagen_url ? `background-image: url('${data.imagen_url}')` : `background: linear-gradient(155deg,#E11D3C,#08080a)`;
+        
+        let images = [data.imagen_url || ''];
+        if (data.imagenes_extra) {
+            try {
+                const extra = JSON.parse(data.imagenes_extra);
+                if (Array.isArray(extra)) images = images.concat(extra);
+            } catch(e) {}
+        }
+        images = images.filter(url => url);
+        if(images.length === 0) images = ['']; // fallback para gradient
+        
+        let leftHTML = '';
+        if (images.length === 1) {
+            const bgStyle = images[0] ? `background-image: url('${images[0]}')` : `background: linear-gradient(155deg,#E11D3C,#08080a)`;
+            leftHTML = `<div class="modal-left" style="${bgStyle}"></div>`;
+        } else {
+            let slidesHTML = images.map((img, i) => `<div class="carousel-slide ${i===0?'active':''}" style="background-image: url('${img}')"></div>`).join('');
+            let dotsHTML = images.map((_, i) => `<div class="carousel-dot ${i===0?'active':''}" onclick="goToSlide(${i})"></div>`).join('');
+            leftHTML = `
+                <div class="modal-left" style="position: relative;">
+                    <div class="carousel-container">
+                        ${slidesHTML}
+                        <button class="carousel-btn carousel-prev" onclick="changeSlide(-1)">&#10094;</button>
+                        <button class="carousel-btn carousel-next" onclick="changeSlide(1)">&#10095;</button>
+                        <div class="carousel-dots">${dotsHTML}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
         modalBody.innerHTML = `
-          <div class="modal-left" style="${bgStyle}"></div>
+          ${leftHTML}
           <div class="modal-right">
             <div class="modal-cat">${data.categoria || 'Sin categoría'}</div>
             <div class="modal-title">${data.titulo}</div>

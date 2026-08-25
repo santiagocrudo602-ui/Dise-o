@@ -13,14 +13,12 @@ INSERT INTO Contacto (tipo, valor, visible, perfil_info_id) VALUES ('WhatsApp', 
 INSERT INTO Contacto (tipo, valor, visible, perfil_info_id) VALUES ('Email', 'hola@magnet.is', 1, 1);
 
 INSERT INTO Trabajo (titulo, descripcion, imagen_url, categoria, orden, administrador_id)
-VALUES ('Campera Voltaje', 'Eco-cuero, tachas y un corte que no pide permiso.', '', 'Abrigos', 1, 1);
+VALUES ('Vestido Distorsión', 'Vestido gris oscuro con recortes materializado.', '/uploads/design_page_5.png', 'Vestidos', 1, 1);
 INSERT INTO Trabajo (titulo, descripcion, imagen_url, categoria, orden, administrador_id)
-VALUES ('Top Fricción', 'Transparencias estratégicas y asimetría total.', '', 'Tops', 2, 1);
+VALUES ('Conjunto Asimétrico', 'Conjunto top y pantalón con cintas.', '/uploads/design_page_6.png', 'Conjuntos', 2, 1);
 INSERT INTO Trabajo (titulo, descripcion, imagen_url, categoria, orden, administrador_id)
-VALUES ('Pantalón Static', 'Cargo reinventado con cintas y herrajes.', '', 'Pantalones', 3, 1);
+VALUES ('Top y Falda Dark', 'Diseño denim oscuro con herrajes.', '/uploads/design_page_7.png', 'Conjuntos', 3, 1);
 INSERT INTO Trabajo (titulo, descripcion, imagen_url, categoria, orden, administrador_id)
-VALUES ('Chaleco Nocturno', 'Denim intervenido, cadenas y actitud dark.', '', 'Abrigos', 4, 1);
+VALUES ('Conjunto Nocturno', 'Corset con recortes y argollas, diseño exclusivo.', '/uploads/photo.jpeg', 'Tops', 4, 1);
 INSERT INTO Trabajo (titulo, descripcion, imagen_url, categoria, orden, administrador_id)
-VALUES ('Conjunto Magnetic', 'Dos piezas en rojo sangre que paralizan la pista.', '', 'Conjuntos', 5, 1);
-INSERT INTO Trabajo (titulo, descripcion, imagen_url, categoria, orden, administrador_id)
-VALUES ('Buzo Static', 'Oversize, oscuro y con detalles reflectivos.', '', 'Abrigos', 6, 1);
+VALUES ('Colección Yámanas', 'Pieles sintéticas y ecocuero inspirados en la herencia cultural.', '/uploads/yamana.jpg', 'Colección', 5, 1);

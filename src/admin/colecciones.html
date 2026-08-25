@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Magnet Admin - Trabajos</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="admin.js"></script>
+</head>
+<body>
+<nav class="nav">
+    <div class="nav-header">Magnet Admin</div>
+    <a href="/" style="color:var(--muted); font-size:12px; margin-top:-35px; margin-bottom:15px; background:none; padding:0; display:inline-block;">← Volver al sitio</a>
+    <a href="dashboard.html">Diseños</a>
+    <a href="colecciones.html" class="active">Colecciones</a>
+    <a href="perfil.html">Perfil & Contacto</a>
+    <a href="textos.html">Textos de la Página</a>
+    <a href="seguridad.html">Seguridad (2FA)</a>
+    <a href="#" onclick="logout()" class="logout">Cerrar Sesión</a>
+</nav>
+<div class="main-wrapper">
+    <div class="container">
+        <h1 class="page-title">Colecciones e Inspiración</h1>
+        <p class="page-desc">Administra las secciones de inspiración de tu portfolio.</p>
+        
+        <div class="card" id="form-card" style="display:none;">
+            <h2 id="form-title">Nueva Colección</h2>
+            <p class="sub" id="form-sub">Completa los datos para crear una nueva sección.</p>
+            <input type="hidden" id="c-id">
+            
+            <div class="form-group">
+                <label>Nombre de la Colección</label>
+                <input type="text" id="c-nombre" placeholder="Ej: Dark Revival">
+            </div>
+            
+            <div class="form-group">
+                <label>Texto de Inspiración / Descripción</label>
+                <textarea id="c-desc" rows="3" placeholder="Ej: Esta colección se inspira en..."></textarea>
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
+                    <label>Orden de aparición</label>
+                    <input type="number" id="c-orden" placeholder="0 = primero" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Imagen de Inspiración</label>
+                    <input type="file" id="c-file" accept="image/png, image/jpeg">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>URL de Imagen (Autocompletado)</label>
+                <input type="text" id="c-img" placeholder="/uploads/...">
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button onclick="saveColeccion()">Guardar Colección</button>
+                <button onclick="hideForm()" class="secondary">Cancelar</button>
+            </div>
+            <div id="form-msg" class="error"></div>
+        </div>
+        
+        <div style="margin-bottom: 20px; display:flex; justify-content: flex-end;">
+            <button onclick="showForm()">+ Agregar Colección</button>
+        </div>
+        
+        <div class="card" style="padding: 0;">
+            <table id="table-colecciones">
+                <thead><tr><th>Orden</th><th>Nombre</th><th>Acciones</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+let colecciones = [];
+async function load() {
+    const resCol = await apiFetch('/api/admin/colecciones');
+    colecciones = await resCol.json();
+    
+    const tb = document.querySelector('#table-colecciones tbody');
+    tb.innerHTML = '';
+    colecciones.forEach(c => {
+        tb.innerHTML += `<tr>
+            <td>${c.orden}</td>
+            <td style="font-weight:500;">${c.nombre}</td>
+            <td>
+                <a onclick="editC(${c.id})">Editar</a>
+                <a onclick="delC(${c.id})" class="del">Eliminar</a>
+            </td>
+        </tr>`;
+    });
+}
+function showForm(c = null) {
+    document.getElementById('form-card').style.display = 'block';
+    document.getElementById('form-msg').innerText = '';
+    document.getElementById('form-title').innerText = c ? 'Editar Colección' : 'Nueva Colección';
+    document.getElementById('c-id').value = c ? c.id : '';
+    document.getElementById('c-nombre').value = c ? c.nombre : '';
+    document.getElementById('c-desc').value = c ? c.descripcion : '';
+    document.getElementById('c-orden').value = c ? c.orden : '0';
+    document.getElementById('c-img').value = c ? c.imagen_inspiracion_url : '';
+    document.getElementById('c-file').value = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function hideForm() { document.getElementById('form-card').style.display = 'none'; }
+function editC(id) { const c = colecciones.find(x => x.id === id); if(c) showForm(c); }
+async function delC(id) {
+    if(!confirm('¿Eliminar colección? Los diseños no se borrarán pero quedarán sin colección.')) return;
+    await apiFetch(`/api/admin/colecciones/${id}`, { method: 'DELETE' });
+    load();
+}
+async function saveColeccion() {
+    const id = document.getElementById('c-id').value;
+    const fileInput = document.getElementById('c-file');
+    let imagen_inspiracion_url = document.getElementById('c-img').value;
+
+    if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append('imagen', fileInput.files[0]);
+        const uploadRes = await apiFetch('/api/admin/upload', { method: 'POST', body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok) imagen_inspiracion_url = uploadData.url;
+        else return document.getElementById('form-msg').innerText = uploadData.error;
+    }
+
+    const payload = {
+        nombre: document.getElementById('c-nombre').value,
+        descripcion: document.getElementById('c-desc').value,
+        orden: parseInt(document.getElementById('c-orden').value) || 0,
+        imagen_inspiracion_url
+    };
+
+    const url = id ? `/api/admin/colecciones/${id}` : '/api/admin/colecciones';
+    const method = id ? 'PUT' : 'POST';
+    const res = await apiFetch(url, { method, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if(res.ok) { hideForm(); load(); }
+    else document.getElementById('form-msg').innerText = data.error;
+}
+load();
+</script>
+</body>
+</html>

@@ -7,20 +7,20 @@ class AdminTrabajosModel {
     
     static create(data) {
         const stmt = db.prepare(`
-            INSERT INTO Trabajo (titulo, descripcion, imagen_url, categoria, orden, administrador_id)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO Trabajo (titulo, descripcion, imagen_url, imagenes_extra, categoria, orden, coleccion_id, administrador_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         `);
-        const info = stmt.run(data.titulo, data.descripcion || '', data.imagen_url, data.categoria || '', data.orden || 0, data.administrador_id);
+        const info = stmt.run(data.titulo, data.descripcion || '', data.imagen_url, data.imagenes_extra || '[]', data.categoria || '', data.orden || 0, data.coleccion_id, data.administrador_id);
         return info.lastInsertRowid;
     }
 
     static update(id, data) {
         const stmt = db.prepare(`
             UPDATE Trabajo 
-            SET titulo = ?, descripcion = ?, imagen_url = ?, categoria = ?, orden = ?
+            SET titulo = ?, descripcion = ?, imagen_url = ?, imagenes_extra = ?, categoria = ?, orden = ?, coleccion_id = ?
             WHERE id = ?
         `);
-        const info = stmt.run(data.titulo, data.descripcion || '', data.imagen_url, data.categoria || '', data.orden || 0, id);
+        const info = stmt.run(data.titulo, data.descripcion || '', data.imagen_url, data.imagenes_extra || '[]', data.categoria || '', data.orden || 0, data.coleccion_id, id);
         return info.changes;
     }
 

@@ -9,7 +9,8 @@
 <nav class="nav">
     <div class="nav-header">Magnet Admin</div>
     <a href="/" style="color:var(--muted); font-size:12px; margin-top:-35px; margin-bottom:15px; background:none; padding:0; display:inline-block;">← Volver al sitio</a>
-    <a href="dashboard.html" class="active">Diseños & Colección</a>
+    <a href="dashboard.html" class="active">Diseños</a>
+    <a href="colecciones.html">Colecciones</a>
     <a href="perfil.html">Perfil & Contacto</a>
     <a href="textos.html">Textos de la Página</a>
     <a href="seguridad.html">Seguridad (2FA)</a>
@@ -31,8 +32,21 @@
                     <input type="text" id="t-titulo" placeholder="Ej: Campera Voltaje">
                 </div>
                 <div class="form-group">
+                    <label>Colección</label>
+                    <select id="t-coleccion">
+                        <option value="">Ninguna</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="form-group">
                     <label>Categoría</label>
                     <input type="text" id="t-cat" placeholder="Ej: Abrigos">
+                </div>
+                <div class="form-group">
+                    <label>Orden de aparición</label>
+                    <input type="number" id="t-orden" placeholder="0 = primero" value="0">
                 </div>
             </div>
             
@@ -43,18 +57,20 @@
             
             <div class="row">
                 <div class="form-group">
-                    <label>Orden de aparición</label>
-                    <input type="number" id="t-orden" placeholder="0 = primero" value="0">
+                    <label>Imagen Principal</label>
+                    <input type="file" id="t-file" accept="image/png, image/jpeg">
                 </div>
                 <div class="form-group">
-                    <label>Imagen</label>
-                    <input type="file" id="t-file" accept="image/png, image/jpeg">
+                    <label>URL de Imagen Principal</label>
+                    <input type="text" id="t-img" placeholder="/uploads/...">
                 </div>
             </div>
             
             <div class="form-group">
-                <label>URL de Imagen (Autocompletado)</label>
-                <input type="text" id="t-img" placeholder="/uploads/... (se llena automáticamente al subir)">
+                <label>Imágenes Extra (Carrusel)</label>
+                <input type="file" id="t-file-extra" multiple accept="image/png, image/jpeg">
+                <input type="hidden" id="t-img-extra">
+                <div id="extra-imgs-preview" style="font-size: 12px; color: var(--muted); margin-top: 4px;"></div>
             </div>
             
             <div style="display:flex; gap:10px; margin-top:20px;">
@@ -78,7 +94,14 @@
 </div>
 <script>
 let works = [];
+let colecciones = [];
 async function load() {
+    const resCol = await apiFetch('/api/admin/colecciones');
+    colecciones = await resCol.json();
+    
+    const select = document.getElementById('t-coleccion');
+    select.innerHTML = '<option value="">Ninguna</option>' + colecciones.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+
     const res = await apiFetch('/api/admin/trabajos');
     works = await res.json();
     const tb = document.querySelector('#table-trabajos tbody');
@@ -104,9 +127,22 @@ function showForm(w = null) {
     document.getElementById('t-titulo').value = w ? w.titulo : '';
     document.getElementById('t-desc').value = w ? w.descripcion : '';
     document.getElementById('t-cat').value = w ? w.categoria : '';
+    document.getElementById('t-coleccion').value = w ? (w.coleccion_id || '') : '';
     document.getElementById('t-orden').value = w ? w.orden : '0';
     document.getElementById('t-img').value = w ? w.imagen_url : '';
+    document.getElementById('t-img-extra').value = w && w.imagenes_extra ? w.imagenes_extra : '[]';
+    
+    let extraPreview = '';
+    try {
+        if(w && w.imagenes_extra) {
+            const arr = JSON.parse(w.imagenes_extra);
+            extraPreview = arr.length + ' imágenes guardadas en el carrusel.';
+        }
+    } catch(e){}
+    document.getElementById('extra-imgs-preview').innerText = extraPreview;
+
     document.getElementById('t-file').value = '';
+    document.getElementById('t-file-extra').value = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function hideForm() { document.getElementById('form-card').style.display = 'none'; }
@@ -119,7 +155,13 @@ async function delT(id) {
 async function saveTrabajo() {
     const id = document.getElementById('t-id').value;
     const fileInput = document.getElementById('t-file');
+    const extraFileInput = document.getElementById('t-file-extra');
+    
     let imagen_url = document.getElementById('t-img').value;
+    let imagenes_extra = [];
+    try {
+        imagenes_extra = JSON.parse(document.getElementById('t-img-extra').value || '[]');
+    } catch(e){ imagenes_extra = []; }
 
     if (fileInput.files.length > 0) {
         const formData = new FormData();
@@ -130,12 +172,28 @@ async function saveTrabajo() {
         else return document.getElementById('form-msg').innerText = uploadData.error;
     }
 
+    if (extraFileInput.files.length > 0) {
+        const formData = new FormData();
+        for (let i = 0; i < extraFileInput.files.length; i++) {
+            formData.append('imagenes_extra', extraFileInput.files[i]);
+        }
+        const uploadRes = await apiFetch('/api/admin/upload-multiple', { method: 'POST', body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok) {
+            imagenes_extra = uploadData.urls; // replace entirely for now
+        } else {
+            return document.getElementById('form-msg').innerText = uploadData.error;
+        }
+    }
+
     const payload = {
         titulo: document.getElementById('t-titulo').value,
         descripcion: document.getElementById('t-desc').value,
         categoria: document.getElementById('t-cat').value,
+        coleccion_id: document.getElementById('t-coleccion').value ? parseInt(document.getElementById('t-coleccion').value) : null,
         orden: parseInt(document.getElementById('t-orden').value) || 0,
-        imagen_url
+        imagen_url,
+        imagenes_extra
     };
 
     const url = id ? `/api/admin/trabajos/${id}` : '/api/admin/trabajos';

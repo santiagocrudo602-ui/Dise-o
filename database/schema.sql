@@ -6,16 +6,29 @@ CREATE TABLE IF NOT EXISTS Administrador (
     twofa_habilitado INTEGER DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS Coleccion (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT NOT NULL,
+    descripcion TEXT,
+    imagen_inspiracion_url TEXT,
+    orden INTEGER DEFAULT 0,
+    administrador_id INTEGER,
+    FOREIGN KEY(administrador_id) REFERENCES Administrador(id)
+);
+
 CREATE TABLE IF NOT EXISTS Trabajo (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     titulo TEXT NOT NULL,
     descripcion TEXT,
     imagen_url TEXT NOT NULL,
+    imagenes_extra TEXT DEFAULT '[]',
     categoria TEXT,
     orden INTEGER DEFAULT 0,
     fecha_creacion TEXT DEFAULT CURRENT_TIMESTAMP,
     administrador_id INTEGER,
-    FOREIGN KEY(administrador_id) REFERENCES Administrador(id)
+    coleccion_id INTEGER,
+    FOREIGN KEY(administrador_id) REFERENCES Administrador(id),
+    FOREIGN KEY(coleccion_id) REFERENCES Coleccion(id)
 );
 
 CREATE TABLE IF NOT EXISTS PerfilInfo (

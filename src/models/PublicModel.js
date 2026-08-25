@@ -1,6 +1,10 @@
 const db = require('../config/db');
 
 class PublicModel {
+    static getColecciones() {
+        return db.prepare('SELECT * FROM Coleccion ORDER BY orden ASC').all();
+    }
+
     static getTrabajos() {
         return db.prepare('SELECT * FROM Trabajo ORDER BY orden ASC').all();
     }
