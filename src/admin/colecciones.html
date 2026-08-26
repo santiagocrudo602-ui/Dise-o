@@ -43,7 +43,10 @@
                 </div>
                 <div class="form-group">
                     <label>Imagen de Inspiración</label>
-                    <input type="file" id="c-file" accept="image/png, image/jpeg">
+                    <div style="display:flex; gap:10px;">
+                        <input type="file" id="c-file" accept="image/png, image/jpeg">
+                        <button type="button" onclick="document.getElementById('c-img').value=''; document.getElementById('c-file').value='';" class="secondary" style="padding: 6px 12px; font-size:12px;">Quitar</button>
+                    </div>
                 </div>
             </div>
             

@@ -28,8 +28,12 @@
                 <textarea id="p-texto" rows="5" placeholder="Escribe aquí tu historia o visión de la marca..."></textarea>
             </div>
             <div class="form-group">
-                <label>URL Foto de Perfil (Opcional)</label>
-                <input type="text" id="p-foto" placeholder="Ej: /uploads/mifoto.jpg">
+                <label>Foto de Perfil (Opcional)</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="file" id="p-foto-file" accept="image/*">
+                    <button type="button" onclick="document.getElementById('p-foto').value=''; document.getElementById('p-foto-file').value='';" class="secondary" style="padding: 6px 12px; font-size:12px;">Quitar</button>
+                    <input type="hidden" id="p-foto">
+                </div>
             </div>
             <button onclick="savePerfil()">Guardar Cambios</button>
             <span id="p-msg" class="success" style="display:inline-block; margin-left:15px; margin-top:0;"></span>
@@ -92,7 +96,19 @@ async function load() {
     });
 }
 async function savePerfil() {
-    const p = { texto_sobre_mi: document.getElementById('p-texto').value, foto_perfil_url: document.getElementById('p-foto').value };
+    let foto_perfil_url = document.getElementById('p-foto').value;
+    const fileInput = document.getElementById('p-foto-file');
+    
+    if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append('imagen', fileInput.files[0]);
+        const uploadRes = await apiFetch('/api/admin/upload', { method: 'POST', body: formData });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok) foto_perfil_url = uploadData.url;
+        else return document.getElementById('p-msg').innerText = uploadData.error;
+    }
+
+    const p = { texto_sobre_mi: document.getElementById('p-texto').value, foto_perfil_url };
     await apiFetch('/api/admin/perfil', { method: 'PUT', body: JSON.stringify(p) });
     document.getElementById('p-msg').innerText = 'Cambios guardados con éxito';
     setTimeout(() => document.getElementById('p-msg').innerText = '', 3000);

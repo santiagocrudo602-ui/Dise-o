@@ -58,7 +58,10 @@
             <div class="row">
                 <div class="form-group">
                     <label>Imagen Principal</label>
-                    <input type="file" id="t-file" accept="image/png, image/jpeg">
+                    <div style="display:flex; gap:10px;">
+                        <input type="file" id="t-file" accept="image/png, image/jpeg">
+                        <button type="button" onclick="document.getElementById('t-img').value=''; document.getElementById('t-file').value='';" class="secondary" style="padding: 6px 12px; font-size:12px;">Quitar</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>URL de Imagen Principal</label>
@@ -68,7 +71,10 @@
             
             <div class="form-group">
                 <label>Imágenes Extra (Carrusel)</label>
-                <input type="file" id="t-file-extra" multiple accept="image/png, image/jpeg">
+                <div style="display:flex; gap:10px;">
+                    <input type="file" id="t-file-extra" multiple accept="image/png, image/jpeg">
+                    <button type="button" onclick="document.getElementById('t-img-extra').value=''; document.getElementById('t-file-extra').value=''; document.getElementById('extra-imgs-preview').innerText='';" class="secondary" style="padding: 6px 12px; font-size:12px;">Quitar</button>
+                </div>
                 <input type="hidden" id="t-img-extra">
                 <div id="extra-imgs-preview" style="font-size: 12px; color: var(--muted); margin-top: 4px;"></div>
             </div>
