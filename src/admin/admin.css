@@ -36,6 +36,11 @@ body {
   margin-bottom: 40px; padding: 0 10px;
   text-transform: uppercase; letter-spacing: 1px;
 }
+.back-link {
+  color: var(--muted) !important; font-size: 12px !important; margin-top: -35px !important; margin-bottom: 15px !important;
+  background: none !important; padding: 0 !important; display: inline-block !important; text-decoration: none;
+}
+.back-link:hover { color: var(--ink) !important; }
 .nav a {
   color: var(--muted); text-decoration: none;
   padding: 12px 16px; border-radius: 6px;
@@ -121,9 +126,15 @@ td a.del { color: var(--red); }
 /* RESPONSIVE */
 @media (max-width: 800px) {
   body { flex-direction: column; }
-  .nav { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 20px; border-right: none; border-bottom: 1px solid var(--border); }
-  .nav-header { width: 100%; margin-bottom: 10px; }
-  .nav a { flex: 1 1 auto; text-align: center; font-size: 13px; padding: 10px; }
+  .nav { 
+    width: 100%; flex-direction: row; flex-wrap: nowrap; padding: 15px 20px; 
+    border-right: none; border-bottom: 1px solid var(--border); 
+    overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 10px; align-items: center;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-header { width: auto; margin-bottom: 0; flex-shrink: 0; margin-right: 10px; }
+  .back-link { margin-top: 0 !important; margin-bottom: 0 !important; flex-shrink: 0; margin-right: 10px; }
+  .nav a { flex: 0 0 auto; text-align: center; font-size: 13px; padding: 8px 12px; }
   .nav a.logout { margin-top: 0; }
   
   .container { padding: 30px 20px; }
