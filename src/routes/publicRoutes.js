@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const publicController = require('../controllers/publicController');
 
-router.get('/colecciones', publicController.getColecciones);
+
 router.get('/trabajos', publicController.getTrabajos);
 router.get('/trabajos/:id', publicController.getTrabajoById);
 router.get('/perfil', publicController.getPerfil);

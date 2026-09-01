@@ -11,7 +11,6 @@
     <div class="nav-header">Magnet Admin</div>
     <a href="/" class="back-link">← Volver al sitio</a>
     <a href="dashboard.html" class="active">Diseños</a>
-    <a href="colecciones.html">Colecciones</a>
     <a href="perfil.html">Perfil & Contacto</a>
     <a href="textos.html">Textos de la Página</a>
     <a href="seguridad.html">Seguridad (2FA)</a>
@@ -33,17 +32,13 @@
                     <input type="text" id="t-titulo" placeholder="Ej: Campera Voltaje">
                 </div>
                 <div class="form-group">
-                    <label>Colección</label>
-                    <select id="t-coleccion">
-                        <option value="">Ninguna</option>
-                    </select>
+                    <label>Categoría</label>
+                    <input type="text" id="t-cat" placeholder="Ej: Abrigos">
                 </div>
             </div>
             
             <div class="row">
                 <div class="form-group">
-                    <label>Categoría</label>
-                    <input type="text" id="t-cat" placeholder="Ej: Abrigos">
                 </div>
                 <div class="form-group">
                     <label>Orden de aparición</label>
@@ -101,14 +96,7 @@
 </div>
 <script>
 let works = [];
-let colecciones = [];
 async function load() {
-    const resCol = await apiFetch('/api/admin/colecciones');
-    colecciones = await resCol.json();
-    
-    const select = document.getElementById('t-coleccion');
-    select.innerHTML = '<option value="">Ninguna</option>' + colecciones.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-
     const res = await apiFetch('/api/admin/trabajos');
     works = await res.json();
     const tb = document.querySelector('#table-trabajos tbody');
@@ -134,7 +122,6 @@ function showForm(w = null) {
     document.getElementById('t-titulo').value = w ? w.titulo : '';
     document.getElementById('t-desc').value = w ? w.descripcion : '';
     document.getElementById('t-cat').value = w ? w.categoria : '';
-    document.getElementById('t-coleccion').value = w ? (w.coleccion_id || '') : '';
     document.getElementById('t-orden').value = w ? w.orden : '0';
     document.getElementById('t-img').value = w ? w.imagen_url : '';
     document.getElementById('t-img-extra').value = w && w.imagenes_extra ? w.imagenes_extra : '[]';
@@ -197,7 +184,6 @@ async function saveTrabajo() {
         titulo: document.getElementById('t-titulo').value,
         descripcion: document.getElementById('t-desc').value,
         categoria: document.getElementById('t-cat').value,
-        coleccion_id: document.getElementById('t-coleccion').value ? parseInt(document.getElementById('t-coleccion').value) : null,
         orden: parseInt(document.getElementById('t-orden').value) || 0,
         imagen_url,
         imagenes_extra

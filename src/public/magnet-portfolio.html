@@ -467,7 +467,7 @@ section{ position:relative; padding:120px 6vw; }
   <div class="nav-mark"><span class="star">✦</span>MAGNET</div>
   <div class="nav-links">
     <a href="#personalidad">Personalidad</a>
-    <a href="#coleccion">Colección</a>
+    <a href="#trabajos">Diseños</a>
     <a href="#proceso">Proceso</a>
     <a href="#contacto">Contacto</a>
   </div>
@@ -529,7 +529,12 @@ section{ position:relative; padding:120px 6vw; }
   </div>
 </section>
 
-<div id="colecciones-wrapper"></div>
+<section id="trabajos" style="padding-top: 60px;">
+  <div class="section-head" style="padding: 0 5%; margin-bottom: 2rem;">
+    <h2 class="section-title">Nuestros Diseños</h2>
+  </div>
+  <div id="trabajos-wrapper"></div>
+</section>
 
 <section class="proceso reveal" id="proceso">
   <div class="section-head" style="margin-bottom:0;">
@@ -666,13 +671,12 @@ section{ position:relative; padding:120px 6vw; }
 
   async function loadTrabajos() {
     try {
-      const res = await fetch('/api/colecciones');
+      const res = await fetch('/api/trabajos');
       if (res.ok) {
-        const colecciones = await res.json();
-        const wrapper = document.getElementById('colecciones-wrapper');
+        const trabajos = await res.json();
+        const wrapper = document.getElementById('trabajos-wrapper');
         wrapper.innerHTML = '';
         
-        const classes = ['piece wide', 'piece narrow', 'piece tall', 'piece narrow', 'piece wide', 'piece narrow'];
         const gradients = [
           'linear-gradient(155deg,#D5CFBF,#08080a)',
           'linear-gradient(155deg,#8A8E91,#08080a)',
@@ -680,62 +684,34 @@ section{ position:relative; padding:120px 6vw; }
           'linear-gradient(155deg,#84899A,#08080a)'
         ];
         
-        colecciones.forEach((col) => {
-          if(!col.trabajos || col.trabajos.length === 0) return;
+        const grid = document.createElement('div');
+        grid.className = 'gallery-grid';
+        grid.style.padding = '0 5%';
+        
+        trabajos.forEach((t, i) => {
+          const card = document.createElement('div');
+          card.className = 'piece-card';
+          card.onclick = () => openModal(t.id);
           
-          const section = document.createElement('section');
-          section.className = 'coleccion reveal in'; 
-          section.id = `col-${col.id || 'otros'}`;
-          
-          let bannerHTML = '';
-          if (col.id !== null) {
-              const bgStyle = col.imagen_inspiracion_url ? `background-image: url('${col.imagen_inspiracion_url}')` : `background: #111`;
-              bannerHTML = `
-                <div class="inspiration-banner" style="${bgStyle}">
-                    <div class="inspiration-overlay">
-                        <div class="inspiration-title">${col.nombre}</div>
-                        <div class="inspiration-desc">${col.descripcion || ''}</div>
-                    </div>
-                </div>
-              `;
+          let imgHTML = '';
+          if (t.imagen_url) {
+            imgHTML = `<img src="${t.imagen_url}" class="piece-img" alt="${t.titulo}">`;
           } else {
-              bannerHTML = `
-                  <div class="section-head">
-                    <h2 class="section-title">${col.nombre}</h2>
-                  </div>
-              `;
+            const grad = gradients[i % gradients.length];
+            imgHTML = `<div class="piece-img" style="background:${grad}"></div>`;
           }
           
-          const grid = document.createElement('div');
-          grid.className = 'gallery-grid';
+          card.innerHTML = `
+            ${imgHTML}
+            <div class="piece-tag">${t.titulo}<span>${t.descripcion || ''}</span></div>
+          `;
           
-          col.trabajos.forEach((t, i) => {
-            const card = document.createElement('div');
-            card.className = 'piece-card';
-            card.onclick = () => openModal(t.id);
-            
-            let imgHTML = '';
-            if (t.imagen_url) {
-              imgHTML = `<img src="${t.imagen_url}" class="piece-img" alt="${t.titulo}">`;
-            } else {
-              const grad = gradients[i % gradients.length];
-              imgHTML = `<div class="piece-img" style="background:${grad}"></div>`;
-            }
-            
-            card.innerHTML = `
-              ${imgHTML}
-              <div class="piece-tag">${t.titulo}<span>${t.descripcion || ''}</span></div>
-            `;
-            
-            grid.appendChild(card);
-          });
-          
-          section.innerHTML = bannerHTML;
-          section.appendChild(grid);
-          wrapper.appendChild(section);
+          grid.appendChild(card);
         });
+        
+        wrapper.appendChild(grid);
       }
-    } catch (err) { console.error('Error cargando colecciones', err); }
+    } catch (err) { console.error('Error cargando diseños', err); }
   }
 
   const modalOverlay = document.getElementById('work-modal');

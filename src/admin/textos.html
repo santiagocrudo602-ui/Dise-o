@@ -10,7 +10,7 @@
 <nav class="nav">
     <div class="nav-header">Magnet Admin</div>
     <a href="/" class="back-link">← Volver al sitio</a>
-    <a href="dashboard.html">Diseños & Colección</a>
+    <a href="dashboard.html">Diseños</a>
     <a href="perfil.html">Perfil & Contacto</a>
     <a href="textos.html" class="active">Textos de la Página</a>
     <a href="seguridad.html">Seguridad (2FA)</a>
@@ -32,23 +32,39 @@ let currentTexts = {};
 const groups = [
     {
         title: 'Sección Principal (Hero)',
-        keys: ['hero_title', 'hero_sub']
+        keys: [
+            'hero_eyebrow', 'hero_title', 'hero_sub', 
+            'hero_meta_1_title', 'hero_meta_1_text',
+            'hero_meta_2_title', 'hero_meta_2_text',
+            'hero_meta_3_title', 'hero_meta_3_text'
+        ]
     },
     {
         title: 'Sección Personalidad',
-        keys: ['pers_title', 'pers_quote']
+        keys: ['pers_eyebrow', 'pers_title', 'pers_quote']
     },
     {
         title: 'Sección Valores',
-        keys: ['val_title']
+        keys: [
+            'val_title', 'val_note',
+            'val_1_num', 'val_1_title', 'val_1_text',
+            'val_2_num', 'val_2_title', 'val_2_text',
+            'val_3_num', 'val_3_title', 'val_3_text'
+        ]
     },
     {
         title: 'Sección Proceso',
-        keys: ['proceso_title']
+        keys: [
+            'proceso_title',
+            'proc_1_num', 'proc_1_title', 'proc_1_text',
+            'proc_2_num', 'proc_2_title', 'proc_2_text',
+            'proc_3_num', 'proc_3_title', 'proc_3_text',
+            'proc_4_num', 'proc_4_title', 'proc_4_text'
+        ]
     },
     {
         title: 'Contacto y Footer',
-        keys: ['contacto_title', 'footer_text']
+        keys: ['contacto_eyebrow', 'contacto_title', 'contacto_text', 'footer_text']
     }
 ];
 

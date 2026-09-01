@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const adminTrabajosController = require('../controllers/adminTrabajosController');
-const adminColeccionController = require('../controllers/adminColeccionController');
+
 const adminInfoController = require('../controllers/adminInfoController');
 const adminTextosController = require('../controllers/adminTextosController');
 const fs = require('fs');
@@ -39,11 +39,7 @@ router.delete('/trabajos/:id', adminTrabajosController.deleteTrabajo);
 router.post('/upload', upload.single('imagen'), adminTrabajosController.uploadImage);
 router.post('/upload-multiple', upload.array('imagenes_extra', 10), adminTrabajosController.uploadMultipleImages);
 
-// Colecciones
-router.get('/colecciones', adminColeccionController.getColecciones);
-router.post('/colecciones', adminColeccionController.createColeccion);
-router.put('/colecciones/:id', adminColeccionController.updateColeccion);
-router.delete('/colecciones/:id', adminColeccionController.deleteColeccion);
+
 
 // Perfil
 router.put('/perfil', adminInfoController.updatePerfil);

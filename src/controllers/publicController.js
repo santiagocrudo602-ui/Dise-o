@@ -1,35 +1,6 @@
 const PublicModel = require('../models/PublicModel');
 
-const getColecciones = (req, res) => {
-    try {
-        const colecciones = PublicModel.getColecciones();
-        const trabajos = PublicModel.getTrabajos();
-        
-        // Group trabajos by coleccion_id
-        const coleccionesConTrabajos = colecciones.map(c => {
-            return {
-                ...c,
-                trabajos: trabajos.filter(t => t.coleccion_id === c.id)
-            };
-        });
-        
-        // Add "unassigned" works if any (or just as a default collection)
-        const unassigned = trabajos.filter(t => !t.coleccion_id);
-        if (unassigned.length > 0) {
-            coleccionesConTrabajos.push({
-                id: null,
-                nombre: 'Otros Diseños',
-                descripcion: '',
-                imagen_inspiracion_url: '',
-                trabajos: unassigned
-            });
-        }
-        
-        res.json(coleccionesConTrabajos);
-    } catch (e) {
-        res.status(500).json({ error: 'Error del servidor' });
-    }
-};
+
 
 const getTrabajos = (req, res) => {
     const trabajos = PublicModel.getTrabajos();
@@ -55,7 +26,6 @@ const getContactos = (req, res) => {
 };
 
 module.exports = {
-    getColecciones,
     getTrabajos,
     getTrabajoById,
     getPerfil,
